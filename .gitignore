@@ -2,3 +2,4 @@
 get_fb_comments_from_fb.py
 get_fb_posts_fb_group.py
 /.idea
+*.csv
