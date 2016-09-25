@@ -6,7 +6,7 @@ import time
 
 app_id = "552403108264856"
 app_secret = "2f6b44a768bc209cac2c492fc180a7b8" # DO NOT SHARE WITH ANYONE!
-page_id = "jutarnji.list"
+page_id = "index.hr"
 
 access_token = app_id + "|" + app_secret
 
