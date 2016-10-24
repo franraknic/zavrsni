@@ -4,9 +4,9 @@ import datetime
 import csv
 import time
 
-app_id = "<FILL IN>"
-app_secret = "<FILL IN>" # DO NOT SHARE WITH ANYONE!
-file_id = "cnn"
+app_id = "552403108264856"
+app_secret = "2f6b44a768bc209cac2c492fc180a7b8" # DO NOT SHARE WITH ANYONE!
+file_id = "index.hr"
 
 access_token = app_id + "|" + app_secret
 
@@ -41,7 +41,7 @@ def getFacebookCommentFeedData(status_id, access_token, num_comments):
         base = "https://graph.facebook.com/v2.6"
         node = "/%s/comments" % status_id 
         fields = "?fields=id,message,like_count,created_time,comments,from,attachment"
-        parameters = "&order=chronological&limit=%s&access_token=%s" % \
+        parameters = "&filter=toplevel&limit=%s&access_token=%s" % \
                 (num_comments, access_token)
         url = base + node + fields + parameters
 

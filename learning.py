@@ -13,7 +13,7 @@ with open('index.hr_facebook_statuses.csv', 'rb') as fa:
     reader = csv.reader(x.replace('\0', '') for x in fa)
     statuses_24 = ([(post[1], '24sata') for post in reader])
 
-labeled_articles = statuses_j[:200] + statuses_24[:200]
+labeled_articles = statuses_j[:500] + statuses_24[:200]
 random.shuffle(labeled_articles)
 
 featuresets = [(article_len(n), source) for (n, source) in labeled_articles]
@@ -23,4 +23,4 @@ classifier = nltk.NaiveBayesClassifier.train(train_set)
 print (nltk.classify.accuracy(classifier, test_set))
 classifier.show_most_informative_features()
 
-print classifier.classify(article_len('Baby mongo podivljao!'))
+print classifier.classify()
