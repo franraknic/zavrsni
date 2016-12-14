@@ -162,8 +162,7 @@ def scrapeFacebookPageFeedStatus(page_id, access_token):
 
                 # Ensure it is a status with the expected metadata
                 if 'reactions' in status:
-                    w.writerow(processFacebookPageFeedStatus(status,
-                        access_token))
+                    w.writerow(processFacebookPageFeedStatus(status, access_token))
 
                 # output progress occasionally to make sure code is not
                 # stalling
@@ -179,13 +178,11 @@ def scrapeFacebookPageFeedStatus(page_id, access_token):
             else:
                 has_next_page = False
 
-
         print "\nDone!\n%s Statuses Processed in %s" % \
                 (num_processed, datetime.datetime.now() - scrape_starttime)
 
 
 if __name__ == '__main__':
     scrapeFacebookPageFeedStatus(page_id, access_token)
-
 
 # The CSV can be opened in all major statistical programs. Have fun! :)
