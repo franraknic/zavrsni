@@ -23,4 +23,4 @@ classifier = nltk.NaiveBayesClassifier.train(train_set)
 print (nltk.classify.accuracy(classifier, test_set))
 classifier.show_most_informative_features()
 
-print classifier.classify()
+print classifier.classify(article_len('Jebem ti sunac'))
