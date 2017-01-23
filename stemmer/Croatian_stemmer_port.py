@@ -56,8 +56,8 @@ def korjenuj(pojavnica):
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
-        print 'Usage: python Croatian_stemmer.py input_file output_file'
-        print 'input_file should be an utf8-encoded text file which is then tokenized, stemmed and written in the output_file in a tab-separated fashion.'
+        print('Usage: python Croatian_stemmer.py input_file output_file')
+        print('input_file should be an utf8-encoded text file which is then tokenized, stemmed and written in the output_file in a tab-separated fashion.')
         sys.exit(1)
     output_file = open(sys.argv[2], 'w')
     pravila = [re.compile(r'^(' + osnova + ')(' + nastavak + r')$') for osnova, nastavak in
