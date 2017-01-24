@@ -3,7 +3,6 @@
 from scrapy import Spider, Request
 from bugforum.items import ForumPost
 
-
 class ForumSpider(Spider):
 
     name = 'forum_spider'
@@ -39,4 +38,3 @@ class ForumSpider(Spider):
         item['post_link'] = response._get_url()
 
         return item
-    
