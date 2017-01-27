@@ -1,5 +1,9 @@
 import csv
 import re
+from nltk.corpus.reader import plaintext
+from nltk.probability import FreqDist
+from nltk.tokenize import *
+import nltk
 
 def csv_corpus(filename, data_index, size = 0):
 
@@ -33,18 +37,18 @@ def clean_html(html):
 
 if __name__ == '__main__':
 
-    csv_corpus('bug_forum.csv', 3)
+    #csv_corpus('jobs.csv', 1)
+    reader = plaintext.PlaintextCorpusReader('F:\zavrsni\corp_make', 'jobs_corp.txt', encoding='utf-8')
 
-    with open('bug_forum_corp.txt', 'rt', encoding='utf-8') as file:
-        data = file.readlines()
-        file.close()
+    print('Number of words in corpus %d' % len(reader.words()))
 
-print(type(data))
-print(data[:50])
+    s = reader.words()
+    long_words = [w for w in s if len(w) > 3]
+    long_words = [w.lower() for w in long_words]
+    print(long_words)
 
-corp = [clean_html(line) for line in data]
+    fdist = FreqDist(long_words)
+    print(fdist.most_common(20))
 
-print(type(corp))
-print(corp[:50])
-#    with open('bug_forum_corp_cleaned.txt', 'w', encoding='utf-8') as file:
- #       file.writelines(clean_html(data))
+    s = nltk.Text(s)
+    print(s.concordance('php'))
