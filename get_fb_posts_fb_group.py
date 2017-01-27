@@ -5,7 +5,7 @@ import csv
 import time
 
 #facebook group ids
-itjobs = "552403108264856"
+itjobs = "1470658223200432"
 sistemci = "765704940137092"
 devhr = "153381991366459"
 
