@@ -4,9 +4,15 @@ import datetime
 import csv
 import time
 
-app_id = "<FILL IN>"
-app_secret = "<FILL IN>" # DO NOT SHARE WITH ANYONE!
-group_id = "759985267390294"
+#facebook group ids
+itjobs = "552403108264856"
+sistemci = "765704940137092"
+devhr = "153381991366459"
+
+
+app_id = "552403108264856"
+app_secret = "2f6b44a768bc209cac2c492fc180a7b8" # DO NOT SHARE WITH ANYONE!
+group_id = itjobs
 
 access_token = app_id + "|" + app_secret
 
