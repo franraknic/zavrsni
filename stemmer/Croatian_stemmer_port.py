@@ -1,4 +1,4 @@
-﻿# -*-coding:utf-8-*-
+# -*-coding:utf-8-*-
 #
 #    Simple stemmer for Croatian v0.1
 #    Copyright 2012 Nikola Ljubešić and Ivan Pandžić
@@ -59,13 +59,13 @@ if __name__ == '__main__':
         print('Usage: python Croatian_stemmer.py input_file output_file')
         print('input_file should be an utf8-encoded text file which is then tokenized, stemmed and written in the output_file in a tab-separated fashion.')
         sys.exit(1)
-    output_file = open(sys.argv[2], 'w')
+    output_file = open(sys.argv[2], 'w', encoding='utf-8')
     pravila = [re.compile(r'^(' + osnova + ')(' + nastavak + r')$') for osnova, nastavak in
-               [e.decode('utf8').strip().split(' ') for e in open('rules.txt')]]
-    transformacije = [e.decode('utf8').strip().split('\t') for e in open('transformations.txt')]
-    for token in re.findall(r'\w+', open(sys.argv[1]).read().decode('utf8'), re.UNICODE):
+               [e.strip().split(' ') for e in open('rules.txt')]]
+    transformacije = [e.strip().split('\t') for e in open('transformations.txt')]
+    for token in re.findall(r'\w+', open(sys.argv[1], encoding='utf-8').read(), re.UNICODE):
         if token.lower() in stop:
-            output_file.write((token + '\t' + token.lower() + '\n').encode('utf8'))
+            output_file.write((token + '\t' + token.lower() + '\n'))
             continue
-        output_file.write((token + '\t' + korjenuj(transformiraj(token.lower())) + '\n').encode('utf8'))
+        output_file.write((token + '\t' + korjenuj(transformiraj(token.lower())) + '\n'))
     output_file.close()
