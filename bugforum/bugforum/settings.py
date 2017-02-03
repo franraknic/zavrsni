@@ -66,6 +66,7 @@ TELNETCONSOLE_ENABLED = False
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     'bugforum.pipelines.DateParse': 300,
+    'bugforum.pipelines.SQLPersist': 200,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
