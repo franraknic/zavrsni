@@ -6,9 +6,15 @@
 # http://doc.scrapy.org/en/latest/topics/spider-middleware.html
 
 from scrapy import signals
+from scrapy import log
+from scrapy import exceptions
+import sqlite3
 
 
 class BugforumSpiderMiddleware(object):
+
+    #check if url is in database
+
     # Not all methods need to be defined. If a method is not defined,
     # scrapy acts as if the spider middleware does not modify the
     # passed objects.
@@ -24,8 +30,19 @@ class BugforumSpiderMiddleware(object):
         # Called for each response that goes through the spider
         # middleware and into the spider.
 
+        con = sqlite3.connect('data.db')
+        cur = con.cursor()
+        cur.execute('SELECT mydata.post_link FROM mydata')
+        links = cur.fetchall()
+
+        spider.logger.msg('Checking request : %s' % response.url)
+
+        if response.url not in links is False:
+            spider.logger.info('Duplicate found, ignoring request ...')
+            raise exceptions.IgnoreRequest
+        else:
+            return None
         # Should return None or raise an exception.
-        return None
 
     def process_spider_output(response, result, spider):
         # Called with the results returned from the Spider, after
