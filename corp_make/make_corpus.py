@@ -4,6 +4,8 @@ from nltk.corpus.reader import plaintext
 from nltk.probability import FreqDist
 from nltk.tokenize import *
 import nltk
+from nltk.util import ngrams
+
 
 def csv_corpus(filename, data_index, size = 0):
 
@@ -52,3 +54,9 @@ if __name__ == '__main__':
 
     s = nltk.Text(s)
     print(s.concordance('php'))
+
+    #s.dispersion_plot(['php', 'python', 'javascript', 'c++', 'c'])
+
+    #fdist.plot(5, cumulative=False)
+
+    print(list(ngrams(s, 4)))
