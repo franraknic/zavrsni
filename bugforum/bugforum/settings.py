@@ -65,9 +65,14 @@ SPIDER_MIDDLEWARES = {
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
+<<<<<<< HEAD
     'bugforum.pipelines.DateParse': 501,
     'bugforum.pipelines.CleanHTML': 502,
     'bugforum.pipelines.SQLPersist': 510,
+=======
+    'bugforum.pipelines.DateParse': 300,
+    'bugforum.pipelines.SQLPersist': 200,
+>>>>>>> ebc08dc54f3726eb5e8b142c51c0cb4c7d76dfca
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
