@@ -7,11 +7,9 @@
 
 import time
 import sqlite3
-<<<<<<< HEAD
 from scrapy import log
 import re
-=======
->>>>>>> ebc08dc54f3726eb5e8b142c51c0cb4c7d76dfca
+
 
 class DateParse(object):
 
@@ -23,7 +21,7 @@ class DateParse(object):
 
         return item
 
-<<<<<<< HEAD
+
 class CleanHTML(object):
 
     def process_item(self, item, spider):
@@ -39,15 +37,13 @@ class CleanHTML(object):
 
         return item
 
-=======
->>>>>>> ebc08dc54f3726eb5e8b142c51c0cb4c7d76dfca
+
 class SQLPersist(object):
 
     def __init__(self):
 
         self.connection = sqlite3.connect('data.db')
         self.cursor = self.connection.cursor()
-<<<<<<< HEAD
         self.cursor.execute('CREATE TABLE IF NOT EXISTS mydata' \
                             '(id INTEGER PRIMARY KEY, post_text TEXT, post_link TEXT, post_date TEXT, post_theme TEXT)')
 
@@ -64,14 +60,3 @@ class SQLPersist(object):
             self.connection.commit()
 
         return item
-=======
-        self.cursor.execute('CREATE TABLE IF NOT EXISTS mydata (id INTIGER PRIMARY KEY, post_text TEXT, post_link TEXT, post_date TEXT, post_theme TEXT)')
-
-    def process_item(self, item, spider):
-
-        forum_post = [(item['post_text'], item['post_link'], item['post_date'], item['post_theme'])]
-        self.cursor.executemany('INSERT INTO mydata VALUES(?,?,?,?)', forum_post)
-        self.connection.commit()
-
-        return item
->>>>>>> ebc08dc54f3726eb5e8b142c51c0cb4c7d76dfca
