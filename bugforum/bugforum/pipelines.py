@@ -44,19 +44,27 @@ class SQLPersist(object):
 
         self.connection = sqlite3.connect('data.db')
         self.cursor = self.connection.cursor()
-        self.cursor.execute('CREATE TABLE IF NOT EXISTS mydata' \
-                            '(id INTEGER PRIMARY KEY, post_text TEXT, post_link TEXT, post_date TEXT, post_theme TEXT)')
+        self.cursor.execute('CREATE TABLE `scraped` ( `id` INTEGER PRIMARY KEY AUTOINCREMENT, `link` TEXT, `tema` TEXT, `date_scraped` TEXT, `date_posted` TEXT )')
 
     def process_item(self, item, spider):
 
-        self.cursor.execute('SELECT * FROM mydata WHERE post_link=?', (item['post_link'],))
+        self.cursor.execute('SELECT * FROM scraped WHERE link=?', (item['post_link'],))
         result = self.cursor.fetchone()
 
         if result:
             log.msg('Item %s in database!' % item['post_link'], level=log.DEBUG)
         else:
-            forum_post = [(None, item['post_text'], item['post_link'], item['post_date'], item['post_theme'])]
+            forum_post = [(None, item['post_link'], item['post_text'], item['post_theme'], item['post_date'],  )]
             self.cursor.executemany('INSERT INTO mydata VALUES(?,?,?,?,?)', forum_post)
             self.connection.commit()
 
         return item
+
+if __name__ == '__main__':
+
+    c = sqlite3.connect('data.db')
+    cur = c.cursor()
+    cur.execute('SELECT * FROM mydata')
+    data = cur.fetchall()
+    print (type(data))
+    print

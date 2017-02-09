@@ -3,6 +3,7 @@ import json
 import datetime
 import time
 import sqlite3
+from sqlite3 import Error
 
 #facebook group ids
 itjobs = "1470658223200432"
@@ -95,11 +96,11 @@ def processFacebookPageFeedStatus(status, access_token):
     # Time needs special care since a) it's in UTC and
     # b) it's not easy to use in statistical programs.
 
-    status_published = datetime.datetime.strptime(\
-            status['created_time'],'%Y-%m-%dT%H:%M:%S+0000')
+    status_published = datetime.datetime.strptime(
+            status['created_time'][:-8],'%Y-%m-%dT%H:%M')
     status_published = status_published + datetime.timedelta(hours=-5) # EST
     # best time format for spreadsheet programs:
-    status_published = status_published.strftime('%Y-%m-%d %H:%M:%S')
+    status_published = status_published.strftime('%Y-%m-%d %H:%M')
 
     # Nested items require chaining dictionary keys.
 
@@ -115,7 +116,7 @@ def processFacebookPageFeedStatus(status, access_token):
     # http://newsroom.fb.com/news/2016/02/reactions-now-available-globally/
 
     reactions = getReactionsForStatus(status_id, access_token) \
-            if status_published > '2016-02-24 00:00:00' else {}
+            if status_published > '2016-02-24 00:00' else {}
 
     num_likes = 0 if 'like' not in reactions else \
             reactions['like']['summary']['total_count']
@@ -145,12 +146,13 @@ def processFacebookPageFeedStatus(status, access_token):
             num_shares,  num_likes, num_loves, num_wows, num_hahas, num_sads, 
             num_angrys)
     '''
-    return (None, status_message, status_id, status_published, 'IT Jobs FB')
+    return (None, status_id, status_message, 'FB Jobs', datetime.datetime.now().strftime("%Y-%m-%d %H:%M"), status_published)
 
 def scrapeFacebookPageFeedStatus(group_id, access_token):
 
-    con = sqlite3.connect('data.db')
+    con = sqlite3.connect('podaci.db')
     c = con.cursor()
+    c.execute('CREATE TABLE IF NOT EXISTS `scraped` ( `id` INTEGER PRIMARY KEY AUTOINCREMENT, `link` TEXT, `text` TEXT, `tema` TEXT, `date_scraped` TEXT, `date_posted` TEXT )')
 
     has_next_page = True
     num_processed = 0   # keep a count on how many we've processed
@@ -168,23 +170,28 @@ def scrapeFacebookPageFeedStatus(group_id, access_token):
             # Ensure it is a status with the expected metadata
             if 'reactions' in status:
                 fb_post = processFacebookPageFeedStatus(status, access_token)
-                c.execute("SELECT count(mydata.post_link) FROM mydata WHERE mydata.post_link = '" + fb_post[2] + "'")
+                c.execute("SELECT count(scraped.link) FROM scraped WHERE scraped.link = '" + fb_post[1] + "'")
                 exists = c.fetchone()
                 if not exists:
 
-                    fb_post = [(fb_post[0], fb_post[1], fb_post[2], fb_post[3], fb_post[4])]
+                    fb_post = [(fb_post[0], fb_post[1], fb_post[2], fb_post[3], fb_post[4], fb_post[5])]
 
-                    c.executemany('INSERT INTO mydata VALUES (?,?,?,?,?)', fb_post)
+                    print fb_post
+
+                    try:
+                        c.executemany('INSERT INTO scraped VALUES (?,?,?,?,?,?)', fb_post)
+                    except sqlite3.Error, e:
+                        print e
+
                     num_stored += 1
-                    con.commit()
 
             # output progress occasionally to make sure code is not
             num_processed += 1
             if num_processed % 100 == 0:
                 print("%s Statuses Processed: %s" % (num_processed,
                         datetime.datetime.now()))
-            if num_stored % 100 == 0:
-                print( "Statuses Stored: %s" % num_stored)
+                con.commit()
+                print("%s Statuses Stored" % num_stored)
 
         # if there is no next page, we're done.
         if 'paging' in statuses.keys():
