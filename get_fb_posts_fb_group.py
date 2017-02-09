@@ -5,6 +5,10 @@ import time
 import sqlite3
 from sqlite3 import Error
 
+#path to db
+DB_PATH = 'F:\\baza.db'
+PAGE_THEME = 'FB jobs'
+
 #facebook group ids
 itjobs = "1470658223200432"
 sistemci = "765704940137092"
@@ -146,17 +150,17 @@ def processFacebookPageFeedStatus(status, access_token):
             num_shares,  num_likes, num_loves, num_wows, num_hahas, num_sads, 
             num_angrys)
     '''
-    return (None, status_id, status_message, 'FB Jobs', datetime.datetime.now().strftime("%Y-%m-%d %H:%M"), status_published)
+    return [None, status_id, status_message, PAGE_THEME, datetime.datetime.now().strftime("%Y-%m-%d %H:%M"), status_published]
 
 def scrapeFacebookPageFeedStatus(group_id, access_token):
 
-    con = sqlite3.connect('podaci.db')
+    con = sqlite3.connect(DB_PATH)
     c = con.cursor()
     c.execute('CREATE TABLE IF NOT EXISTS `scraped` ( `id` INTEGER PRIMARY KEY AUTOINCREMENT, `link` TEXT, `text` TEXT, `tema` TEXT, `date_scraped` TEXT, `date_posted` TEXT )')
 
     has_next_page = True
     num_processed = 0   # keep a count on how many we've processed
-    num_stored = 1
+    num_stored = 0
     scrape_starttime = datetime.datetime.now()
 
     print("Scraping %s Facebook Page: %s\n" % \
@@ -172,18 +176,17 @@ def scrapeFacebookPageFeedStatus(group_id, access_token):
                 fb_post = processFacebookPageFeedStatus(status, access_token)
                 c.execute("SELECT count(scraped.link) FROM scraped WHERE scraped.link = '" + fb_post[1] + "'")
                 exists = c.fetchone()
-                if not exists:
+                if exists[0] == 0:
 
                     fb_post = [(fb_post[0], fb_post[1], fb_post[2], fb_post[3], fb_post[4], fb_post[5])]
-
-                    print fb_post
 
                     try:
                         c.executemany('INSERT INTO scraped VALUES (?,?,?,?,?,?)', fb_post)
                     except sqlite3.Error, e:
                         print e
-
                     num_stored += 1
+                else:
+                    continue
 
             # output progress occasionally to make sure code is not
             num_processed += 1
@@ -208,5 +211,3 @@ def scrapeFacebookPageFeedStatus(group_id, access_token):
 if __name__ == '__main__':
     scrapeFacebookPageFeedStatus(group_id, access_token)
 
-
-# The CSV can be opened in all major statistical programs. Have fun! :)

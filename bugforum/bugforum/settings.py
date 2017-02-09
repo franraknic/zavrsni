@@ -46,9 +46,9 @@ TELNETCONSOLE_ENABLED = False
 
 # Enable or disable spider middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
-SPIDER_MIDDLEWARES = {
-    'bugforum.middlewares.BugforumSpiderMiddleware': 500,
-}
+#SPIDER_MIDDLEWARES = {
+#    'bugforum.middlewares.BugforumSpiderMiddleware': 500,
+#}
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html

@@ -29,18 +29,6 @@ class BugforumSpiderMiddleware(object):
     def process_spider_input(response, spider):
         # Called for each response that goes through the spider
         # middleware and into the spider.
-
-        con = sqlite3.connect('data.db')
-        cur = con.cursor()
-        cur.execute('SELECT mydata.post_link FROM mydata')
-        links = cur.fetchall()
-
-        spider.logger.msg('Checking request : %s' % response.url)
-
-        if response.url not in links is False:
-            spider.logger.info('Duplicate found, ignoring request ...')
-            raise exceptions.IgnoreRequest
-        else:
             return None
         # Should return None or raise an exception.
 
