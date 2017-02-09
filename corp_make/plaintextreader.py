@@ -1,17 +1,8 @@
 from nltk.corpus.reader import plaintext
 from nltk.probability import FreqDist
+from nltk.tokenize import *
 
-class CorpusReader(plaintext.PlaintextCorpusReader):
+reader = plaintext.PlaintextCorpusReader('F:\zavrsni\corp_make', 'developers_facebook_statuses_corp.txt', encoding='utf-8', word_tokenizer=WhitespaceTokenizer())
 
-    pass
-
-reader = CorpusReader('F:\zavrsni\corp_make', '.*\.txt', encoding='utf-8')
-
+print(reader.words())
 print(len(reader.words()))
-
-words = reader.words()
-
-#print(sorted(set(words)))
-
-fdist = FreqDist(words)
-print(fdist.most_common(200))

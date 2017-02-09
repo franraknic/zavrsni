@@ -46,9 +46,9 @@ TELNETCONSOLE_ENABLED = False
 
 # Enable or disable spider middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
-#SPIDER_MIDDLEWARES = {
-#    'bugforum.middlewares.BugforumSpiderMiddleware': 543,
-#}
+SPIDER_MIDDLEWARES = {
+    'bugforum.middlewares.BugforumSpiderMiddleware': 500,
+}
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
@@ -65,7 +65,10 @@ TELNETCONSOLE_ENABLED = False
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'bugforum.pipelines.DateParse': 300,
+
+    'bugforum.pipelines.DateParse': 501,
+    'bugforum.pipelines.CleanHTML': 502,
+    'bugforum.pipelines.SQLPersist': 510,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
