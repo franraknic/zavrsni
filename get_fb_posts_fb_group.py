@@ -1,4 +1,4 @@
-import urllib
+import urllib2
 import json
 import datetime
 import time
@@ -17,11 +17,11 @@ group_id = itjobs
 access_token = app_id + "|" + app_secret
 
 def request_until_succeed(url):
-    req = urllib.request.Request(url)
+    req = urllib2.Request(url)
     success = False
     while success is False:
         try: 
-            response = urllib.urlopen(req)
+            response = urllib2.urlopen(req)
             if response.getcode() == 200:
                 success = True
         except Exception:
