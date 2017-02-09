@@ -1,8 +1,8 @@
-import urllib2
+import urllib
 import json
 import datetime
-import csv
 import time
+import sqlite3
 
 #facebook group ids
 itjobs = "1470658223200432"
@@ -17,26 +17,22 @@ group_id = itjobs
 access_token = app_id + "|" + app_secret
 
 def request_until_succeed(url):
-    req = urllib2.Request(url)
+    req = urllib.request.Request(url)
     success = False
     while success is False:
         try: 
-            response = urllib2.urlopen(req)
+            response = urllib.urlopen(req)
             if response.getcode() == 200:
                 success = True
-        except Exception, e:
-            print e
+        except Exception:
+            print(Exception)
             time.sleep(5)
 
-            print "Error for URL %s: %s" % (url, datetime.datetime.now())
-            print "Retrying."
+            print( "Error for URL %s: %s" % (url, datetime.datetime.now()))
+            print("Retrying.")
 
     return response.read()
 
-# Needed to write tricky unicode correctly to csv
-def unicode_normalize(text):
-    return text.translate({ 0x2018:0x27, 0x2019:0x27, 0x201C:0x22, 0x201D:0x22,
-                            0xa0:0x20 }).encode('utf-8')
 
 def getFacebookPageFeedData(group_id, access_token, num_statuses):
 
@@ -88,13 +84,13 @@ def processFacebookPageFeedStatus(status, access_token):
 
     status_id = status['id']
     status_message = '' if 'message' not in status.keys() else \
-            unicode_normalize(status['message'])
+            (status['message'])
     link_name = '' if 'name' not in status.keys() else \
-            unicode_normalize(status['name'])
+            (status['name'])
     status_type = status['type']
     status_link = '' if 'link' not in status.keys() else \
-            unicode_normalize(status['link'])
-    status_author = unicode_normalize(status['from']['name'])
+            (status['link'])
+    status_author = (status['from']['name'])
 
     # Time needs special care since a) it's in UTC and
     # b) it's not easy to use in statistical programs.
@@ -143,55 +139,63 @@ def processFacebookPageFeedStatus(status, access_token):
     num_angrys = get_num_total_reactions('angry', reactions)
 
     # return a tuple of all processed data
-
+    '''
     return (status_id, status_message, status_author, link_name, status_type, 
             status_link, status_published, num_reactions, num_comments, 
             num_shares,  num_likes, num_loves, num_wows, num_hahas, num_sads, 
             num_angrys)
+    '''
+    return (None, status_message, status_id, status_published, 'IT Jobs FB')
 
 def scrapeFacebookPageFeedStatus(group_id, access_token):
-    with open('%s_facebook_statuses.csv' % group_id, 'wb') as file:
-        w = csv.writer(file)
-        w.writerow(["status_id", "status_message", "status_author", 
-            "link_name", "status_type", "status_link",
-            "status_published", "num_reactions", "num_comments", 
-            "num_shares", "num_likes", "num_loves", "num_wows", 
-            "num_hahas", "num_sads", "num_angrys"])
 
-        has_next_page = True
-        num_processed = 0   # keep a count on how many we've processed
-        scrape_starttime = datetime.datetime.now()
+    con = sqlite3.connect('data.db')
+    c = con.cursor()
 
-        print "Scraping %s Facebook Page: %s\n" % \
-                (group_id, scrape_starttime)
+    has_next_page = True
+    num_processed = 0   # keep a count on how many we've processed
+    num_stored = 1
+    scrape_starttime = datetime.datetime.now()
 
-        statuses = getFacebookPageFeedData(group_id, access_token, 100)
+    print("Scraping %s Facebook Page: %s\n" % \
+            (group_id, scrape_starttime))
 
-        while has_next_page:
-            for status in statuses['data']:
+    statuses = getFacebookPageFeedData(group_id, access_token, 100)
 
-                # Ensure it is a status with the expected metadata
-                if 'reactions' in status:            
-                    w.writerow(processFacebookPageFeedStatus(status, \
-                                                            access_token))
+    while has_next_page:
+        for status in statuses['data']:
 
-                # output progress occasionally to make sure code is not
-                # stalling
-                num_processed += 1
-                if num_processed % 100 == 0:
-                    print "%s Statuses Processed: %s" % (num_processed, 
-                            datetime.datetime.now())
+            # Ensure it is a status with the expected metadata
+            if 'reactions' in status:
+                fb_post = processFacebookPageFeedStatus(status, access_token)
+                c.execute("SELECT count(mydata.post_link) FROM mydata WHERE mydata.post_link = '" + fb_post[2] + "'")
+                exists = c.fetchone()
+                if not exists:
 
-            # if there is no next page, we're done.
-            if 'paging' in statuses.keys():
-                statuses = json.loads(request_until_succeed(\
-                        statuses['paging']['next']))
-            else:
-                has_next_page = False
+                    fb_post = [(fb_post[0], fb_post[1], fb_post[2], fb_post[3], fb_post[4])]
+
+                    c.executemany('INSERT INTO mydata VALUES (?,?,?,?,?)', fb_post)
+                    num_stored += 1
+                    con.commit()
+
+            # output progress occasionally to make sure code is not
+            num_processed += 1
+            if num_processed % 100 == 0:
+                print("%s Statuses Processed: %s" % (num_processed,
+                        datetime.datetime.now()))
+            if num_stored % 100 == 0:
+                print( "Statuses Stored: %s" % num_stored)
+
+        # if there is no next page, we're done.
+        if 'paging' in statuses.keys():
+            statuses = json.loads(request_until_succeed(\
+                    statuses['paging']['next']))
+        else:
+            has_next_page = False
 
 
-        print "\nDone!\n%s Statuses Processed in %s" % \
-                (num_processed, datetime.datetime.now() - scrape_starttime)
+    print ("\nDone!\n%s Statuses Processed in %s" % \
+            (num_processed, datetime.datetime.now() - scrape_starttime))
 
 
 if __name__ == '__main__':
