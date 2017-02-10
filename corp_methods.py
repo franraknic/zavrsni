@@ -1,16 +1,19 @@
 from nltk import word_tokenize
 import nltk
+import sqlite3
 
-raw = open('corp.txt', encoding='utf-8').read()
+con = sqlite3.connect('baza.db')
+cur = con.cursor()
 
-# punkt tokenizer
-tokens = word_tokenize(raw)
+cur.execute('select distinct scraped.tema from scraped')
+teme = cur.fetchall()
 
-#sortirano
-words = [w.lower() for w in tokens]
-vocab = sorted(set(words))
+lst = []
 
-#pretvori u nltk objekt text
-text = nltk.Text(words)
-text.concordance('hdz')
-print(text.collocations())
+for t in teme:
+    cur.execute('select count(*), tema from scraped where scraped.tema = ?', t)
+    lst.append(cur.fetchone())
+
+for t in lst:
+    if t[0] > 1000:
+        print t
