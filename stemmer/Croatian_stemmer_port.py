@@ -27,6 +27,9 @@ stop = set(
      'žele', 'moram', 'moraš', 'mora', 'moramo', 'morate', 'moraju', 'trebam', 'trebaš', 'treba', 'trebamo', 'trebate',
      'trebaju', 'mogu', 'možeš', 'može', 'možemo', 'možete'])
 
+pravila = [re.compile(r'^(' + osnova + ')(' + nastavak + r')$') for osnova, nastavak in
+           [e.strip().split(' ') for e in open('rules.txt')]]
+transformacije = [e.strip().split('\t') for e in open('transformations.txt')]
 
 def istakniSlogotvornoR(niz):
     return re.sub(r'(^|[^aeiou])r($|[^aeiou])', r'\1R\2', niz)
@@ -53,6 +56,15 @@ def korjenuj(pojavnica):
             if imaSamoglasnik(dioba.group(1)) and len(dioba.group(1)) > 1:
                 return dioba.group(1)
     return pojavnica
+
+def kor_tokens(tokens):
+
+    korjenovano = []
+
+    for token in tokens:
+        korjenovano.append(korjenuj(transformiraj(token)))
+
+    return korjenovano
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
