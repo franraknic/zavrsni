@@ -23,12 +23,12 @@ Q_NONIT = "select text from scraped where scraped.tema = 'Filmovi, TV serije, gl
 def get_posts_labeled(query, label):
 
     try:
-
         print("Fetching posts with label: %s" % label)
         connection = sqlite3.connect('baza.db')
         cursor = connection.cursor()
         cursor.execute(query)
         data = cursor.fetchall()
+
     except sqlite3.Error:
         print(sqlite3.Error)
 
@@ -52,10 +52,9 @@ def get_features(post, category_corps):
     tokens = [w for w in tokens if fil.match(w)]
     tokens = [w for w in tokens if not urls.match(w)]
 
-    #features['number_tokens'] = len(tokens)
-    #features['first_token'] = tokens[0]
+    features['number_tokens'] = len(tokens)
 
-    tokens = [w for w in tokens if len(w) >= 4]
+    tokens = [w for w in tokens if len(w) > 4]
     #tokens = kor_tokens(tokens) #korjenovanje
 
     for corp in category_corps:
@@ -98,10 +97,10 @@ def cat_tokens(query):
     tokens = [w for w in tokens if fil.match(w)]
     tokens = [w for w in tokens if not urls.match(w)]
 
-    tokens = [w for w in tokens if len(w) >= 4]
+    tokens = [w for w in tokens if len(w) > 4]
     #tokens = kor_tokens(tokens)
     fdist = FreqDist(tokens)
-    most_common = fdist.most_common(30)
+    most_common = fdist.most_common(60)
     ctokens = [w[0] for w in most_common]
 
     return ctokens
@@ -126,12 +125,10 @@ if __name__ == '__main__':
 
     random.shuffle(labeled_posts)
     feature_sets = [(get_features(post, category_corps), cat) for (post, cat) in labeled_posts]
-    train_set, test_set = feature_sets[:len(feature_sets) - 1500], feature_sets[len(feature_sets) - 1501:]
+    train_set, test_set = feature_sets[:len(feature_sets) - 1500], feature_sets[len(feature_sets) - 1500:]
 
     classifier = nltk.NaiveBayesClassifier.train(train_set)
     print(nltk.classify.accuracy(classifier, test_set))
     print(classifier.show_most_informative_features(40))
-
-
 
     pass
